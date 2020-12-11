@@ -24,9 +24,9 @@ GLfloat screenHeight = 450.0;
 GLfloat screenWidth = 450.0;
 
 //oct coords
-GLfloat octX = 0.0;//x s hole
-GLfloat octY = 0.0;//y s hole
-GLfloat octZ = 0.0;//z s hole
+GLfloat octX = 0.0;//x s segment
+GLfloat octY = 0.0;//y s segment
+GLfloat octZ = 0.0;//z s segment
 GLfloat octH = 200.0;
 
 //normals
@@ -339,7 +339,7 @@ GLubyte slized_vertex_color[][3]{
 	255, 0, 255,
 
 
-	// мультикалор
+	// градиент
 	255, 0, 0,
 	0, 255, 0,
 	0, 0, 255,
@@ -554,60 +554,62 @@ void drawOct( float normX , float normY, float normZ, float normH){
 void drawSlizedOct(){
 
 	int o = 0;//color arr
-	float qpi = 3.1415 / 2;
+	float semi_phi = 3.1415 / 2;
 	float x, y, z = 0.0;
-	for (int upwards = 1; upwards <= 2; upwards++) {
-		for (int quadrant = 0; quadrant < 4; quadrant++) {
+	float segment = 0.053;
+
+	for (int y_segment  = 1; y_segment  <= 2; y_segment ++) {
+		for (int semi_phi_sector= 0; semi_phi_sector< 4; semi_phi_sector++) {
 			for (int i = 0; i < 21; i += 3) {
 			x, y, z = 0.0;
 			glBegin(GL_POLYGON);
-			x = (1 - (0.053 * i)) * sin(qpi * quadrant) * octH;
-			if (upwards == 1) {
-				y = 0.053 * i * octH;
+			x = (1 - (segment  * i)) * sin( semi_phi * semi_phi_sector ) * octH;
+			if (y_segment  == 1) {
+				y = segment  * i * octH;
 			}
 			else {
-				y = -0.053 * i * octH;
+				y = -segment  * i * octH;
 			}
-			z = (1 - (0.053 * i)) * cos(qpi * quadrant)*octH;
+			z = (1 - (segment  * i)) * cos( semi_phi * semi_phi_sector )*octH;
 			glColor3ub(slized_vertex_color[o][0],slized_vertex_color[o][1],slized_vertex_color[o][2]);
 			glNormal3f(x, y, z);
 			glVertex3f(x, y, z);
 
 			o++;
-			x = (1 - (0.053 * i)) * sin(qpi * (quadrant + 1))*octH;
-			if (upwards == 1) {
-				y = 0.053 * i *octH;
+			x = (1 - (segment  * i)) * sin(semi_phi * (semi_phi_sector+ 1))*octH;
+			if (y_segment  == 1) {
+				y = segment  * i *octH;
 			}
 			else {
-				y = -0.053 * i *octH;
+				y = -segment  * i *octH;
 			}
-			z = (1 - (0.053 * i)) * cos(qpi * (quadrant + 1))*octH;
+			z = (1 - (segment  * i)) * cos(semi_phi * (semi_phi_sector+ 1))*octH;
 
 			glColor3ub(slized_vertex_color[o][0],slized_vertex_color[o][1],slized_vertex_color[o][2]);
 			glNormal3f(x, y, z);
 			glVertex3f(x, y, z);
 
 			o++;
-			x = (1 - 0.053 * (i + 1)) * sin(qpi * (quadrant + 1))*octH;
-			if (upwards == 1) {
-				y = 0.053 * (i + 1) * octH;
+			x = (1 - segment  * (i + 1)) * sin(semi_phi * (semi_phi_sector+ 1))*octH;
+			if (y_segment  == 1) {
+				y = segment  * (i + 1) * octH;
 			}
 			else {
-				y = -0.053 * (i + 1) * octH;
+				y = -segment  * (i + 1) * octH;
 			}
-			z = (1 - 0.053 * (i + 1)) * cos(qpi * (quadrant + 1))* octH;
+			z = (1 - segment  * (i + 1)) * cos(semi_phi * (semi_phi_sector+ 1))* octH;
 			glColor3ub(slized_vertex_color[o][0],slized_vertex_color[o][1],slized_vertex_color[o][2]);
 			glNormal3f(x, y, z);
 			glVertex3f(x, y, z);
 			o++;
-			x = (1 - 0.053 * (i + 1)) * sin(qpi * quadrant) * octH;
-			if (upwards == 1) {
-				y = 0.053 * (i + 1)*octH;
+			x = (1 - segment  * (i + 1)) * sin(semi_phi * semi_phi_sector ) * octH;
+			if (y_segment  == 1) {
+				y = segment  * (i + 1)*octH;
 			}
 			else {
-				y = -0.053 * (i + 1)*octH;
+				y = -segment  * (i + 1)*octH;
 			}
-			z = (1 - 0.053 * (i + 1)) * cos(qpi * quadrant) * octH;
+			z = (1 - segment  * (i + 1)) * cos(semi_phi * semi_phi_sector ) * octH;
 			glColor3ub(slized_vertex_color[o][0],slized_vertex_color[o][1],slized_vertex_color[o][2]);
 			glNormal3f(x, y, z);
 			glVertex3f(x, y, z);
@@ -793,6 +795,7 @@ void button_pressed(int button, int x_curs_pos, int y_curs_pos){
 				sphere_rot = sphere_right_rotation;
 			else sphere_rot = nope;
 			break;
+
 		case GLUT_KEY_PAGE_UP:
 			octX+=0.6;
 			octY+=0.6;
@@ -812,36 +815,48 @@ void button_pressed(int button, int x_curs_pos, int y_curs_pos){
 			octZ=0.0;
 			break;
 		case GLUT_KEY_F4:
-			oct_is_multicolored = true;
-			oct_is_multitextured = false;
-			oct_is_textured = false;
+			if(!oct_is_slized){
+				oct_is_multicolored = true;
+				oct_is_multitextured = false;
+				oct_is_textured = false;
+			}
+			break;
+		case GLUT_KEY_F6:
+			if(!oct_is_slized){
+				oct_is_multicolored = false;
+				oct_is_multitextured =false;
+				glEnable(GL_TEXTURE_2D);
+				oct_is_textured = true;
+				load_textures();
+				}
+			break;	
+		case GLUT_KEY_F7:
+			if(!oct_is_slized){
+				oct_is_multicolored = false;
+				oct_is_multitextured = true;
+				glEnable(GL_TEXTURE_2D);
+				oct_is_textured = true;
+				load_textures();
+			}
+			break;
+		
+		case GLUT_KEY_F8:
+		if (!oct_is_slized)
+				blend=!blend;
+			break;
+		case GLUT_KEY_F9:
+			oct_is_slized =! oct_is_slized;
+			if(oct_is_slized){
+				oct_is_textured = false;
+				oct_is_multicolored = false;
+				oct_is_multitextured = false;
+			}
 			break;
 		case GLUT_KEY_F5:
 			light = !light;
 			break;
-		case GLUT_KEY_F6:
-			oct_is_multicolored = false;
-			oct_is_multitextured =false;
-			glEnable(GL_TEXTURE_2D);
-			oct_is_textured = true;
-			load_textures();
-			break;	
-		case GLUT_KEY_F7:
-			oct_is_multicolored = false;
-			oct_is_multitextured = true;
-			glEnable(GL_TEXTURE_2D);
-			oct_is_textured = true;
-			load_textures();
-			break;
-		case GLUT_KEY_F8:
-			blend=!blend;
-			break;
-		case GLUT_KEY_F9:
-			oct_is_slized =! oct_is_slized;
-			break;
 		default:
 			break;
-		
 
 
 	}
