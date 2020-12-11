@@ -4,7 +4,7 @@
 #include<cmath>
 #include<iostream>
 #include "./third_party/stb_image.h"
-#include "./third_party/stb_image_write.h"
+
 
 using std::cin;
 using std::cout;
@@ -17,6 +17,8 @@ void init();
 void movement_logic();
 void button_pressed(int button, int x_curs_pos, int y_curs_pos);
 void load_textures();
+
+void drawSlizedOct();
 //setup screen params
 GLfloat screenHeight = 450.0;
 GLfloat screenWidth = 450.0;
@@ -75,12 +77,305 @@ enum sphere_rotation{
 bool oct_is_multicolored = true;
 bool oct_is_multitextured = false; 
 bool oct_is_textured = false;
+bool oct_is_slized = false;
 bool light = true;
 bool blend = false;
 
 oct_rotation oct_rot = non;
 sphere_rotation sphere_rot = nope;
+GLubyte slized_vertex_color[][3]{
+		// красный
+	255, 0, 0,
+	255, 0, 0,
+	255, 0, 0,
+	255, 0, 0,
 
+	255, 0, 0,
+	255, 0, 0,
+	255, 0, 0,
+	255, 0, 0,
+
+	255, 0, 0,
+	255, 0, 0,
+	255, 0, 0,
+	255, 0, 0,
+
+	255, 0, 0,
+	255, 0, 0,
+	255, 0, 0,
+	255, 0, 0,
+
+	255, 0, 0,
+	255, 0, 0,
+	255, 0, 0,
+	255, 0, 0,
+
+	255, 0, 0,
+	255, 0, 0,
+	255, 0, 0,
+	255, 0, 0,
+
+	255, 0, 0,
+	255, 0, 0,
+	255, 0, 0,
+	255, 0, 0,
+
+
+	// оранжевый
+	255, 89, 0,
+	255, 89, 0,
+	255, 89, 0,
+	255, 89, 0,
+
+	255, 89, 0,
+	255, 89, 0,
+	255, 89, 0,
+	255, 89, 0,
+
+	255, 89, 0,
+	255, 89, 0,
+	255, 89, 0,
+	255, 89, 0,
+
+	255, 89, 0,
+	255, 89, 0,
+	255, 89, 0,
+	255, 89, 0,
+
+	255, 89, 0,
+	255, 89, 0,
+	255, 89, 0,
+	255, 89, 0,
+
+	255, 89, 0,
+	255, 89, 0,
+	255, 89, 0,
+	255, 89, 0,
+
+	255, 89, 0,
+	255, 89, 0,
+	255, 89, 0,
+	255, 89, 0,
+
+	// жёлтый
+	255, 255, 0,
+	255, 255, 0,
+	255, 255, 0,
+	255, 255, 0,
+
+	255, 255, 0,
+	255, 255, 0,
+	255, 255, 0,
+	255, 255, 0,
+
+	255, 255, 0,
+	255, 255, 0,
+	255, 255, 0,
+	255, 255, 0,
+
+	255, 255, 0,
+	255, 255, 0,
+	255, 255, 0,
+	255, 255, 0,
+
+	255, 255, 0,
+	255, 255, 0,
+	255, 255, 0,
+	255, 255, 0,
+
+	255, 255, 0,
+	255, 255, 0,
+	255, 255, 0,
+	255, 255, 0,
+
+	255, 255, 0,
+	255, 255, 0,
+	255, 255, 0,
+	255, 255, 0,
+
+
+	// зелёный
+	0, 255, 0,
+	0, 255, 0,
+	0, 255, 0,
+	0, 255, 0,
+
+	0, 255, 0,
+	0, 255, 0,
+	0, 255, 0,
+	0, 255, 0,
+
+	0, 255, 0,
+	0, 255, 0,
+	0, 255, 0,
+	0, 255, 0,
+
+	0, 255, 0,
+	0, 255, 0,
+	0, 255, 0,
+	0, 255, 0,
+
+	0, 255, 0,
+	0, 255, 0,
+	0, 255, 0,
+	0, 255, 0,
+
+	0, 255, 0,
+	0, 255, 0,
+	0, 255, 0,
+	0, 255, 0,
+
+	0, 255, 0,
+	0, 255, 0,
+	0, 255, 0,
+	0, 255, 0,
+
+	// голубой
+	0, 255, 255,
+	0, 255, 255,
+	0, 255, 255,
+	0, 255, 255,
+
+	0, 255, 255,
+	0, 255, 255,
+	0, 255, 255,
+	0, 255, 255,
+
+	0, 255, 255,
+	0, 255, 255,
+	0, 255, 255,
+	0, 255, 255,
+
+	0, 255, 255,
+	0, 255, 255,
+	0, 255, 255,
+	0, 255, 255,
+
+	0, 255, 255,
+	0, 255, 255,
+	0, 255, 255,
+	0, 255, 255,
+
+	0, 255, 255,
+	0, 255, 255,
+	0, 255, 255,
+	0, 255, 255,
+
+	0, 255, 255,
+	0, 255, 255,
+	0, 255, 255,
+	0, 255, 255,
+
+	// синий
+	0, 0, 255,
+	0, 0, 255,
+	0, 0, 255,
+	0, 0, 255,
+
+	0, 0, 255,
+	0, 0, 255,
+	0, 0, 255,
+	0, 0, 255,
+
+	0, 0, 255,
+	0, 0, 255,
+	0, 0, 255,
+	0, 0, 255,
+
+	0, 0, 255,
+	0, 0, 255,
+	0, 0, 255,
+	0, 0, 255,
+
+	0, 0, 255,
+	0, 0, 255,
+	0, 0, 255,
+	0, 0, 255,
+
+	0, 0, 255,
+	0, 0, 255,
+	0, 0, 255,
+	0, 0, 255,
+
+	0, 0, 255,
+	0, 0, 255,
+	0, 0, 255,
+	0, 0, 255,
+
+	// фиолетовый
+	255, 0, 255,
+	255, 0, 255,
+	255, 0, 255,
+	255, 0, 255,
+
+	255, 0, 255,
+	255, 0, 255,
+	255, 0, 255,
+	255, 0, 255,
+
+	255, 0, 255,
+	255, 0, 255,
+	255, 0, 255,
+	255, 0, 255,
+
+	255, 0, 255,
+	255, 0, 255,
+	255, 0, 255,
+	255, 0, 255,
+
+	255, 0, 255,
+	255, 0, 255,
+	255, 0, 255,
+	255, 0, 255,
+
+	255, 0, 255,
+	255, 0, 255,
+	255, 0, 255,
+	255, 0, 255,
+
+	255, 0, 255,
+	255, 0, 255,
+	255, 0, 255,
+	255, 0, 255,
+
+
+	// мультикалор
+	255, 0, 0,
+	0, 255, 0,
+	0, 0, 255,
+	100, 100, 100,
+
+	255, 0, 0,
+	0, 255, 0,
+	0, 0, 255,
+	100, 100, 100,
+
+	255, 0, 0,
+	0, 255, 0,
+	0, 0, 255,
+	100, 100, 100,
+
+	255, 0, 0,
+	0, 255, 0,
+	0, 0, 255,
+	100, 100, 100,
+
+	255, 0, 0,
+	0, 255, 0,
+	0, 0, 255,
+	100, 100, 100,
+
+	255, 0, 0,
+	0, 255, 0,
+	0, 0, 255,
+	100, 100, 100,
+
+	255, 0, 0,
+	0, 255, 0,
+	0, 0, 255,
+	100, 100, 100,
+
+};
 
 
 void drawOct( float normX , float normY, float normZ, float normH){
@@ -256,6 +551,74 @@ void drawOct( float normX , float normY, float normZ, float normH){
 
 }
 
+void drawSlizedOct(){
+
+	int o = 0;//color arr
+	float qpi = 3.1415 / 2;
+	float x, y, z = 0.0;
+	for (int upwards = 1; upwards <= 2; upwards++) {
+		for (int quadrant = 0; quadrant < 4; quadrant++) {
+			for (int i = 0; i < 21; i += 3) {
+			x, y, z = 0.0;
+			glBegin(GL_POLYGON);
+			x = (1 - (0.053 * i)) * sin(qpi * quadrant) * octH;
+			if (upwards == 1) {
+				y = 0.053 * i * octH;
+			}
+			else {
+				y = -0.053 * i * octH;
+			}
+			z = (1 - (0.053 * i)) * cos(qpi * quadrant)*octH;
+			glColor3ub(slized_vertex_color[o][0],slized_vertex_color[o][1],slized_vertex_color[o][2]);
+			glNormal3f(x, y, z);
+			glVertex3f(x, y, z);
+
+			o++;
+			x = (1 - (0.053 * i)) * sin(qpi * (quadrant + 1))*octH;
+			if (upwards == 1) {
+				y = 0.053 * i *octH;
+			}
+			else {
+				y = -0.053 * i *octH;
+			}
+			z = (1 - (0.053 * i)) * cos(qpi * (quadrant + 1))*octH;
+
+			glColor3ub(slized_vertex_color[o][0],slized_vertex_color[o][1],slized_vertex_color[o][2]);
+			glNormal3f(x, y, z);
+			glVertex3f(x, y, z);
+
+			o++;
+			x = (1 - 0.053 * (i + 1)) * sin(qpi * (quadrant + 1))*octH;
+			if (upwards == 1) {
+				y = 0.053 * (i + 1) * octH;
+			}
+			else {
+				y = -0.053 * (i + 1) * octH;
+			}
+			z = (1 - 0.053 * (i + 1)) * cos(qpi * (quadrant + 1))* octH;
+			glColor3ub(slized_vertex_color[o][0],slized_vertex_color[o][1],slized_vertex_color[o][2]);
+			glNormal3f(x, y, z);
+			glVertex3f(x, y, z);
+			o++;
+			x = (1 - 0.053 * (i + 1)) * sin(qpi * quadrant) * octH;
+			if (upwards == 1) {
+				y = 0.053 * (i + 1)*octH;
+			}
+			else {
+				y = -0.053 * (i + 1)*octH;
+			}
+			z = (1 - 0.053 * (i + 1)) * cos(qpi * quadrant) * octH;
+			glColor3ub(slized_vertex_color[o][0],slized_vertex_color[o][1],slized_vertex_color[o][2]);
+			glNormal3f(x, y, z);
+			glVertex3f(x, y, z);
+			o++;
+			glEnd();
+			}
+		}
+	}
+
+}
+
 void drawSphere(){
 	glColor3f(1.0,1.0,1.0);
 	glTranslatef(0.0,0.0,240.0);
@@ -267,37 +630,47 @@ void display()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
+	if(oct_is_slized){
 
-	if(blend){
-		glEnable(GL_BLEND);
-		glDepthMask(GL_FALSE);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-	}
-	if(oct_is_multicolored)
-    {
-        glPushMatrix();
+		glPushMatrix();
         glRotatef(rotateOctX, 1.0, 0.0, 0.0);
         glRotatef(rotateOctY, 0.0, 1.0, 0.0);
-        drawOct(octNormX, octNormY, octNormZ, octNormH);
+        drawSlizedOct();
 		movement_logic();
         glPopMatrix();
     }
+	else {
+		if(blend){
+			glEnable(GL_BLEND);
+			glDepthMask(GL_FALSE);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+		}
+		if(oct_is_multicolored)
+		{
+			glPushMatrix();
+			glRotatef(rotateOctX, 1.0, 0.0, 0.0);
+			glRotatef(rotateOctY, 0.0, 1.0, 0.0);
+			drawOct(octNormX, octNormY, octNormZ, octNormH);
+			movement_logic();
+			glPopMatrix();
+		}
 
-    else 
-    {
-        glEnable(GL_TEXTURE_2D);
-        glPushMatrix();
-        glRotatef(rotateOctX, 1.0, 0.0, 0.0);
-     	glRotatef(rotateOctY, 0.0, 1.0, 0.0);
-        drawOct(octNormX, octNormY, octNormZ, octNormH);
-		movement_logic();
-        glPopMatrix();
-        glDisable(GL_TEXTURE_2D);
-	
-    }
-	if(blend){
-		glDepthMask(GL_TRUE);
-		glDisable(GL_BLEND);
+		else 
+		{
+			glEnable(GL_TEXTURE_2D);
+			glPushMatrix();
+			glRotatef(rotateOctX, 1.0, 0.0, 0.0);
+			glRotatef(rotateOctY, 0.0, 1.0, 0.0);
+			drawOct(octNormX, octNormY, octNormZ, octNormH);
+			movement_logic();
+			glPopMatrix();
+			glDisable(GL_TEXTURE_2D);
+		
+		}
+		if(blend){
+			glDepthMask(GL_TRUE);
+			glDisable(GL_BLEND);
+		}
 	}
 
 	
@@ -426,9 +799,11 @@ void button_pressed(int button, int x_curs_pos, int y_curs_pos){
 			octZ+=0.6;
 			break;
 		case GLUT_KEY_PAGE_DOWN:
-			octX -=0.6;
-			octY -=0.6;
-			octZ -=0.6;
+			if(abs(octX) >= 0.00001){
+				octX -=0.6;
+				octY -=0.6;
+				octZ -=0.6;
+			}
 			
 			break;
 		case GLUT_KEY_F3:
@@ -460,6 +835,9 @@ void button_pressed(int button, int x_curs_pos, int y_curs_pos){
 			break;
 		case GLUT_KEY_F8:
 			blend=!blend;
+			break;
+		case GLUT_KEY_F9:
+			oct_is_slized =! oct_is_slized;
 			break;
 		default:
 			break;
@@ -593,7 +971,8 @@ int main(int argc, char **argv)
 	<<"F5 - switch the lightness ON/OFF\n"
 	<<"F6 - make oct monotextured\n"
 	<<"F7 - make oct multitextred\n"
-	<<"F8 - make oct blend, not blend";;
+	<<"F8 - make oct blend, not blend\n"
+	<<"F9 - make oct slized\n";
 
 
 	glutInit(&argc, argv);
