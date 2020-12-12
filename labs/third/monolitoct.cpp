@@ -553,7 +553,7 @@ void drawOct( float normX , float normY, float normZ, float normH){
 
 void drawSlizedOct(){
 
-	int o = 0;//color arr
+	int dot = 0;//color arr
 	float semi_phi = 3.1415 / 2;
 	float x, y, z = 0.0;
 	float segment = 0.053;
@@ -571,11 +571,11 @@ void drawSlizedOct(){
 				y = -segment  * i * octH;
 			}
 			z = (1 - (segment  * i)) * cos( semi_phi * semi_phi_sector )*octH;
-			glColor3ub(slized_vertex_color[o][0],slized_vertex_color[o][1],slized_vertex_color[o][2]);
+			glColor3ub(slized_vertex_color[dot][0],slized_vertex_color[dot][1],slized_vertex_color[dot][2]);
 			glNormal3f(x, y, z);
 			glVertex3f(x, y, z);
 
-			o++;
+			dot++;
 			x = (1 - (segment  * i)) * sin(semi_phi * (semi_phi_sector+ 1))*octH;
 			if (y_segment  == 1) {
 				y = segment  * i *octH;
@@ -585,11 +585,11 @@ void drawSlizedOct(){
 			}
 			z = (1 - (segment  * i)) * cos(semi_phi * (semi_phi_sector+ 1))*octH;
 
-			glColor3ub(slized_vertex_color[o][0],slized_vertex_color[o][1],slized_vertex_color[o][2]);
+			glColor3ub(slized_vertex_color[dot][0],slized_vertex_color[dot][1],slized_vertex_color[dot][2]);
 			glNormal3f(x, y, z);
 			glVertex3f(x, y, z);
 
-			o++;
+			dot++;
 			x = (1 - segment  * (i + 1)) * sin(semi_phi * (semi_phi_sector+ 1))*octH;
 			if (y_segment  == 1) {
 				y = segment  * (i + 1) * octH;
@@ -598,10 +598,10 @@ void drawSlizedOct(){
 				y = -segment  * (i + 1) * octH;
 			}
 			z = (1 - segment  * (i + 1)) * cos(semi_phi * (semi_phi_sector+ 1))* octH;
-			glColor3ub(slized_vertex_color[o][0],slized_vertex_color[o][1],slized_vertex_color[o][2]);
+			glColor3ub(slized_vertex_color[dot][0],slized_vertex_color[dot][1],slized_vertex_color[dot][2]);
 			glNormal3f(x, y, z);
 			glVertex3f(x, y, z);
-			o++;
+			dot++;
 			x = (1 - segment  * (i + 1)) * sin(semi_phi * semi_phi_sector ) * octH;
 			if (y_segment  == 1) {
 				y = segment  * (i + 1)*octH;
@@ -610,10 +610,10 @@ void drawSlizedOct(){
 				y = -segment  * (i + 1)*octH;
 			}
 			z = (1 - segment  * (i + 1)) * cos(semi_phi * semi_phi_sector ) * octH;
-			glColor3ub(slized_vertex_color[o][0],slized_vertex_color[o][1],slized_vertex_color[o][2]);
+			glColor3ub(slized_vertex_color[dot][0],slized_vertex_color[dot][1],slized_vertex_color[dot][2]);
 			glNormal3f(x, y, z);
 			glVertex3f(x, y, z);
-			o++;
+			dot++;
 			glEnd();
 			}
 		}

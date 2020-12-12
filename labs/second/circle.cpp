@@ -1,5 +1,3 @@
-
-
 #include<iostream>
 #include<GL/freeglut.h>
 #include<math.h>
@@ -17,7 +15,6 @@ float x  = LEFT_END_OF_MAP - CIRCLERAD;
 float y(0.8f);
 float colour_depth = COLOUR_DEPTH;
 bool sun_up = true;
-
 bool day = true;
 int WindW, WindH;
 float x_sun = x;
@@ -161,10 +158,6 @@ GLubyte colors[] = {
 void display(){
  
 
-	
-
-	
-
 	if(day){
 	glClear(GL_COLOR_BUFFER_BIT);
     glClearColor(0.0f * colour_depth,0.8f * colour_depth,0.8f*colour_depth,0.0f);
@@ -173,22 +166,21 @@ void display(){
 	
 	glVertexPointer(2, GL_FLOAT, 0, vertex);
 	glColorPointer(3, GL_UNSIGNED_BYTE, 0, colors);
-		
 	glDrawArrays(GL_QUADS, 0, 16);	
     glDrawArrays(GL_TRIANGLES, 16,3 );
-    //glDrawArrays(GL_POLYGON, 37,dot_count );
-	glDisableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);	
-		glEnableClientState(GL_VERTEX_ARRAY);	
-		glEnableClientState(GL_COLOR_ARRAY);
-		glVertexPointer(2, GL_FLOAT, 0, sun);
-		glColorPointer(3, GL_UNSIGNED_BYTE, 0, sun_colors);
+	
+	
+	glEnableClientState(GL_VERTEX_ARRAY);	
+	glEnableClientState(GL_COLOR_ARRAY);
+	glVertexPointer(2, GL_FLOAT, 0, sun);
+	glColorPointer(3, GL_UNSIGNED_BYTE, 0, sun_colors);
+	glDrawArrays(GL_POLYGON,0,15);
 
-    	glDrawArrays(GL_POLYGON,0,15);
-
-		glDisableClientState(GL_COLOR_ARRAY);
-		glDisableClientState(GL_VERTEX_ARRAY);
-		glutSwapBuffers();
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glutSwapBuffers();
 		for(int i = 0; i<30; i++){
 			if(i%2 == 0)
 			sun[i] += 0.02; 
@@ -197,7 +189,7 @@ void display(){
 		
 		x = sun[0];
 		if( RIGHT_END_OF_MAP + CIRCLERAD - std::abs(x) < 0.00f){
-            std::cout<< std::endl<<"NIGHT"<<std::endl;
+            //std::cout<< std::endl<<"NIGHT"<<std::endl;
             x = LEFT_END_OF_MAP - CIRCLERAD;
             day = false;
 			for(int i =0; i<30; i++)
@@ -207,7 +199,7 @@ void display(){
         
         }
 		else if( (x + NOON > NOON) && (sun_up == true) ) {
-            std::cout<<"NOON"<<std::endl;
+            //std::cout<<"NOON"<<std::endl;
             sun_up = false;
 			colour_depth = 1.0;
         }
@@ -229,7 +221,7 @@ void display(){
 		
 		glDrawArrays(GL_QUADS, 0, 16);	
     	glDrawArrays(GL_TRIANGLES, 16,3 );
-		cout<<" "<<sun[0];
+		//std::cout<<" "<<sun[0];
 		glEnableClientState(GL_VERTEX_ARRAY);	
 		glEnableClientState(GL_COLOR_ARRAY);
 		glVertexPointer(2, GL_FLOAT, 0, sun);
@@ -253,15 +245,15 @@ void display(){
 				x = sun[i];
 			}
 		}
-		if( RIGHT_END_OF_MAP + CIRCLERAD - std::abs(x) < 0.00f){
-            std::cout<< std::endl<<"DAY"<<std::endl;
+		if( RIGHT_END_OF_MAP + CIRCLERAD - std::abs(x) <= 0.00f){
+            //std::cout<< std::endl<<"DAY"<<std::endl;
             x = LEFT_END_OF_MAP - CIRCLERAD;
             sun_up = true;
             day = true;
 			for(int i =0; i<30; i++){
 				sun[i] = sun_start[i];
 				if(i%2 == 0)
-					moon[i] = sun[i] +0.02f;
+					moon[i] = sun[i] + 0.02f;
 				else
 					moon[i]= sun[i];
 		}
