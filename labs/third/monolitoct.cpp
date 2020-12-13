@@ -53,6 +53,9 @@ struct text_img {
 	unsigned char * data;
 	int sizeX,sizeY,n;
 };
+char text_name[8][11]{
+	"aq.png",  "bl.png" , "grad.png", "green.png",   "org.png",  "red.png",  "vi.png",  "yel.png"
+};
 
 GLuint textures[8];
 int texsum = sizeof(textures)/sizeof(textures[0]);
@@ -714,7 +717,7 @@ void init(){
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, outside_light_diffuse);
 	
 	glEnable(GL_COLOR_MATERIAL);
-	glEnable(GL_NORMALIZE);
+	//glEnable(GL_NORMALIZE);
 	load_textures();
 }
 
@@ -865,107 +868,26 @@ void button_pressed(int button, int x_curs_pos, int y_curs_pos){
 }
 
 void load_textures()
-{
-
-	text_img* texture1 = new text_img;
-	text_img* texture2 = new text_img;
-	text_img* texture3 = new text_img;
-	text_img* texture4 = new text_img;
-	text_img* texture5 = new text_img;
-	text_img* texture6 = new text_img;
-	text_img* texture7 = new text_img;
-	text_img* texture8 = new text_img;
+{ 
+	text_img* texture  = new text_img [8];
 	
+	//size_t texture_pos = 0;
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glGenTextures(8, textures);
 
-	
-	if(!oct_is_multitextured){	
-		texture1->data = stbi_load("grad.png",&texture1->sizeX,&texture1->sizeY,&texture1->n,STBI_rgb);
-		texture2->data = stbi_load("grad.png",&texture2->sizeX,&texture2->sizeY,&texture2->n,STBI_rgb);
-		texture3->data = stbi_load("grad.png",&texture3->sizeX,&texture3->sizeY,&texture3->n,STBI_rgb);
-		texture4->data = stbi_load("grad.png",&texture4->sizeX,&texture4->sizeY,&texture4->n,STBI_rgb);
-		texture5->data = stbi_load("grad.png",&texture5->sizeX,&texture5->sizeY,&texture5->n,STBI_rgb);
-		texture6->data = stbi_load("grad.png",&texture6->sizeX,&texture6->sizeY,&texture6->n,STBI_rgb);
-		texture7->data = stbi_load("grad.png",&texture7->sizeX,&texture7->sizeY,&texture7->n,STBI_rgb);
-		texture8->data = stbi_load("grad.png",&texture8->sizeX,&texture8->sizeY,&texture8->n,STBI_rgb);
-		
-		if(  texture1->data == nullptr || texture2->data == nullptr
-		   ||texture3->data == nullptr || texture4->data == nullptr
-		   ||texture5->data == nullptr || texture6->data == nullptr
-		   ||texture7->data == nullptr || texture8->data == nullptr) {
-  			std::cout << "loadTexture failed"<<std::endl;
-  		 exit(0);
+		for(int i(0), texture_pos(0); i < 8; i++){
+			texture[i].data = stbi_load(text_name[texture_pos],&texture[i].sizeX,&texture[i].sizeY,&texture[i].n,STBI_rgb);
+			if(texture[i].data == nullptr) {std::cout<<"it's seems some troubles with textures loading\n";exit(0);}
+			if(oct_is_multitextured)  
+				texture_pos++;
+			
+			glBindTexture(GL_TEXTURE_2D, textures[i]);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexImage2D(GL_TEXTURE_2D, 0, 3, texture[i].sizeX, texture[i].sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, texture[i].data);
 		}
-	}
-	else {
-		texture1->data = stbi_load("red.png",&texture1->sizeX,&texture1->sizeY,&texture1->n,STBI_rgb);
-		texture2->data = stbi_load("org.png",&texture2->sizeX,&texture2->sizeY,&texture2->n,STBI_rgb);
-		texture3->data = stbi_load("grad.png",&texture3->sizeX,&texture3->sizeY,&texture3->n,STBI_rgb);
-		texture4->data = stbi_load("green.png",&texture4->sizeX,&texture4->sizeY,&texture4->n,STBI_rgb);
-		texture5->data = stbi_load("aq.png",&texture5->sizeX,&texture5->sizeY,&texture5->n,STBI_rgb);
-		texture6->data = stbi_load("bl.png",&texture6->sizeX,&texture6->sizeY,&texture6->n,STBI_rgb);
-		texture7->data = stbi_load("grad.png",&texture7->sizeX,&texture7->sizeY,&texture7->n,STBI_rgb);
-		texture8->data = stbi_load("yel.png",&texture8->sizeX,&texture8->sizeY,&texture8->n,STBI_rgb);
-		
-		if(  texture1->data == nullptr || texture2->data == nullptr
-		   ||texture3->data == nullptr || texture4->data == nullptr
-		   ||texture5->data == nullptr || texture6->data == nullptr
-		   ||texture7->data == nullptr || texture8->data == nullptr) {
-  			std::cout << "loadTexture failed"<<std::endl;
-  		 exit(0);
-		}
-	}
 
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glGenTextures(8, textures);
-
-	glBindTexture(GL_TEXTURE_2D, textures[0]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture1->sizeX, texture1->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, texture1->data);
-
-	glBindTexture(GL_TEXTURE_2D, textures[1]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture2->sizeX, texture2->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, texture2->data);
-
-	glBindTexture(GL_TEXTURE_2D, textures[2]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture3->sizeX, texture3->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, texture3->data);
-
-	glBindTexture(GL_TEXTURE_2D, textures[3]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture4->sizeX, texture4->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, texture4->data);
-
-	glBindTexture(GL_TEXTURE_2D, textures[4]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture5->sizeX, texture5->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, texture5->data);
-
-	glBindTexture(GL_TEXTURE_2D, textures[5]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture6->sizeX, texture6->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, texture6->data);
-
-	glBindTexture(GL_TEXTURE_2D, textures[6]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture7->sizeX, texture7->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, texture7->data);
-
-	glBindTexture(GL_TEXTURE_2D, textures[7]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, texture8->sizeX, texture8->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, texture8->data);
-   
-    delete texture1;
-	delete texture2;
-	delete texture3;
-	delete texture4;
-	delete texture5;
-	delete texture6;
-	delete texture7;
-	delete texture8;
+	delete[] texture;
 }
 
 int main(int argc, char **argv)
